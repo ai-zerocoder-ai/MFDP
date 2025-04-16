@@ -144,21 +144,26 @@ TattiSketch не просто генератор картинок. Это **эк
 - Получает сгенерированный эскиз в течение 60 секунд прямо в чат — с возможностью сохранить или сразу отправить мастеру.
 - Получает доступ к своей истории генераций (уже реализовано через Web App, backend на Django, PostgreSQL)
 
-> *Cкриншотs интерфейса Telegram-бота:*
+<h4>Скриншоты интерфейса Telegram-бота:</h4>
 
-![Скриншот: Главное меню бота](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/main_menu.png)
+<p align="center">
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/main_menu.png?raw=true" alt="Главное меню" width="400"/>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/service_description.png?raw=true" alt="Описание сервиса" width="400"/>
+</p>
 
-![Скриншот: Описание сервиса](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/service_description.png)
+<p align="center">
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_description.png?raw=true" alt="Описание Digital Art" width="400"/>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_description.png?raw=true" alt="Описание Line Art" width="400"/>
+</p>
 
-![Скриншот: Описание стиля Digital Art](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_description.png)
+<p align="center">
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_gen.png?raw=true" alt="Генерация Digital Art" width="400"/>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_gen.png?raw=true" alt="Генерация Line Art" width="400"/>
+</p>
 
-![Скриншот: Описание стиля Line Art](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_description.png)
-
-![Скриншот: Генерация в стиле Digital Art](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_gen.png)
-
-![Скриншот: Генерация в стиле Line Art](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_gen.png)
-
-![Скриншот: Telegram приложение](https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/web_app.png)
+<p align="center">
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/web_app.png?raw=true" alt="Web App" width="400"/>
+</p>
 
 
 #### Планируемые расширения в рамках 3 модуля курса Практическая ML-инженерия:
