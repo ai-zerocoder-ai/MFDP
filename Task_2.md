@@ -146,23 +146,32 @@ TattiSketch не просто генератор картинок. Это **эк
 
 <h4>Скриншоты интерфейса Telegram-бота:</h4>
 
-<p align="center">
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/main_menu.png?raw=true" alt="Главное меню" width="400"/>
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/service_description.png?raw=true" alt="Описание сервиса" width="400"/>
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/main_menu.png?raw=true" alt="Главное меню" width="500" style="margin-bottom: 16px;">
 </p>
 
-<p align="center">
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_description.png?raw=true" alt="Описание Digital Art" width="400"/>
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_description.png?raw=true" alt="Описание Line Art" width="400"/>
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/service_description.png?raw=true" alt="Описание сервиса" width="500" style="margin-bottom: 16px;">
 </p>
 
-<p align="center">
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_gen.png?raw=true" alt="Генерация Digital Art" width="400"/>
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_gen.png?raw=true" alt="Генерация Line Art" width="400"/>
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_description.png?raw=true" alt="Описание Digital Art" width="500" style="margin-bottom: 16px;">
 </p>
 
-<p align="center">
-  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/web_app.png?raw=true" alt="Web App" width="400"/>
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_description.png?raw=true" alt="Описание Line Art" width="500" style="margin-bottom: 16px;">
+</p>
+
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/digital_art_gen.png?raw=true" alt="Генерация Digital Art" width="500" style="margin-bottom: 16px;">
+</p>
+
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/line_art_gen.png?raw=true" alt="Генерация Line Art" width="500" style="margin-bottom: 16px;">
+</p>
+
+<p>
+  <img src="https://github.com/ai-zerocoder-ai/MFDP/blob/main/screenshots/web_app.png?raw=true" alt="Web App" width="500" style="margin-bottom: 16px;">
 </p>
 
 
