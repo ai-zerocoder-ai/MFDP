@@ -1,0 +1,4 @@
+FROM nginx:latest
+
+# Копируем конфигурацию Nginx (файл nginx.conf должен находиться в папке docker)
+COPY nginx.conf /etc/nginx/nginx.conf

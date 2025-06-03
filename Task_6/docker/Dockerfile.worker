@@ -1,0 +1,37 @@
+FROM python:3.11-slim
+
+# ------------------------------------------------------------
+# 1) Устанавливаем системные библиотеки для fal_client, Pillow и т.д.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# ------------------------------------------------------------
+# 2) Создаём рабочую директорию /app/backend
+WORKDIR /app/backend
+
+# ------------------------------------------------------------
+# 3) Копируем содержимое папки backend с хоста в /app/backend
+COPY backend/ /app/backend
+
+# ------------------------------------------------------------
+# 4) Устанавливаем зависимости Django + Celery и всё остальное
+# Сначала копируем requirements.txt и устанавливаем пакеты
+COPY backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Если в requirements.txt нет httpx, pillow, fal-client, добавим их явно:
+RUN pip install --no-cache-dir httpx pillow fal-client
+
+# ------------------------------------------------------------
+# 5) Настраиваем PYTHONPATH, чтобы Python видел директорию /app/backend
+#    как «корень проекта» (там лежат и папка tattoo_intelligence/, и папка apps/)
+ENV PYTHONPATH="/app/backend"
+
+# ------------------------------------------------------------
+# 6) Запускаем Celery-воркер, указывая, что точка входа – celery_app.py в /app/backend
+#    Будет искать модуль 'tattoo_intelligence.settings', и найдет его в /app/backend/tattoo_intelligence
+CMD ["celery", "-A", "celery_app", "worker", "--loglevel=info"]

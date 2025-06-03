@@ -1,0 +1,42 @@
+FROM python:3.11-slim
+
+# ------------------------------------------------------------
+# 1) Рабочая директория /app
+WORKDIR /app
+
+# ------------------------------------------------------------
+# 2) Устанавливаем зависимости бэкенда (Django, Celery и пр.),
+#    потому что бот импортирует tasks.py, где есть `from django.conf import settings`
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+
+# Устанавливаем Celery, поскольку бот вызывает celery_client.send_task(...)
+RUN pip install --no-cache-dir celery
+
+# ------------------------------------------------------------
+# 3) Устанавливаем зависимости бота
+COPY bot/requirements.txt /app/bot/requirements.txt
+RUN pip install --no-cache-dir -r /app/bot/requirements.txt
+
+# ------------------------------------------------------------
+# 4) Копируем код бэкенда, чтобы в контейнере бота появился пакет apps/
+#    (чтобы `import apps.generations.tasks` работал)
+COPY backend/ /app/backend
+
+# ------------------------------------------------------------
+# 5) Копируем код бота
+COPY bot/ /app/bot
+
+# ------------------------------------------------------------
+# 6) Настраиваем PYTHONPATH так, чтобы Python видел `/app/backend` как «корень»
+ENV PYTHONPATH="/app/backend"
+
+# ------------------------------------------------------------
+# 7) Копируем celery_client.py (наш клиент Celery)
+COPY bot/celery_client.py /app/bot/celery_client.py
+
+# ------------------------------------------------------------
+# 8) Переходим в папку бота и запускаем его
+WORKDIR /app/bot
+ENV PYTHONUNBUFFERED=1
+CMD ["python", "main.py"]

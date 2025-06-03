@@ -1,0 +1,134 @@
+services:
+  backend:
+    build:
+      # Контекст — корень проекта, чтобы иметь доступ и к backend/ и к docker/
+      context: ../
+      # Указываем путь к Dockerfile относительно корня проекта
+      dockerfile: docker/Dockerfile.backend
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      # Монтируем код бэкенда
+      - ../backend:/app/backend
+      # Монтируем папку scripts
+      - ../scripts:/scripts
+      - media_data:/app/backend/media
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+             python create_superuser.py &&
+             python manage.py runserver 0.0.0.0:8000"
+    entrypoint: ["/scripts/entrypoint.sh"]
+
+  bot:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.bot
+    env_file:
+      - .env
+    volumes:
+      - ../bot:/app/bot
+      - ../backend/temp_images:/app/backend/temp_images
+    depends_on:
+      backend:
+        condition: service_started
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    command: >
+      sh -c "cd /app/bot && python main.py"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - bot
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - media_data:/app/backend/media:ro
+      #- /etc/letsencrypt:/etc/letsencrypt:ro #При ручной установке LetsEncrypt
+    restart: always
+
+  database:
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "tattoo_db", "-U", "tattoo_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  worker:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.worker
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    volumes:
+      - ../backend:/app/backend
+      #- ../bot:/app/bot
+    #command: >
+      #sh -c "celery -A backend.celery_app worker --loglevel=info"
+    restart: always
+
+volumes:
+  postgres_data:
+  media_data:
+  rabbitmq_data:

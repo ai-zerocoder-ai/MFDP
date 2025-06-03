@@ -1,0 +1,11 @@
+aiogram==3.18.0
+requests==2.32.3
+openai==1.66.3
+python-dotenv==1.1.0
+fal_client==0.7.0
+pillow==11.2.1
+aiogram[fsm]
+httpx>=0.24.0
+
+pytest
+pytest-asyncio

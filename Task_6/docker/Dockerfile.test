@@ -1,0 +1,55 @@
+FROM python:3.11-slim
+
+# 1) Установим нужные системные пакеты
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      libgl1-mesa-glx \
+      curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Копируем файл с зависимостями для backend
+COPY backend/requirements.txt ./backend/requirements.txt
+
+# Устанавливаем зависимости из backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
+
+# Копируем файл с зависимостями для bot
+COPY bot/requirements.txt ./bot/requirements.txt
+
+# Устанавливаем зависимости из bot/requirements.txt
+RUN pip install --no-cache-dir -r bot/requirements.txt
+
+# 2) Копируем весь backend (включая test_settings.py внутри tattoo_intelligence/)
+COPY backend/ /app/backend/
+
+# 3) Копируем весь bot
+COPY bot/ /app/bot/
+
+# 4) Копируем конфигурацию pytest
+COPY pytest.ini /app/pytest.ini
+
+# (Optional) скопировать conftest.py, если он ещё нужен, но можно не копировать вовсе
+# COPY conftest.py /app/conftest.py
+
+# 5) Устанавливаем зависимости для backend + pytest
+RUN pip install --no-cache-dir \
+      -r /app/backend/requirements.txt \
+      pytest pytest-django httpx
+
+# 6) Устанавливаем зависимости для bot + pytest-asyncio
+RUN pip install --no-cache-dir \
+      -r /app/bot/requirements.txt \
+      pytest pytest-asyncio
+
+# 7) Задаём окружение, чтобы Django знал, где искать настройки
+ENV DJANGO_SETTINGS_MODULE=tattoo_intelligence.test_settings
+ENV PYTHONPATH="/app/backend:/app/bot"
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# 8) По умолчанию запускаем pytest
+CMD ["pytest", "-q", "--disable-warnings", "--maxfail=1"]

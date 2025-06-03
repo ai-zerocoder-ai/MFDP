@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Устанавливаем curl (и postgresql-client)
+RUN apt-get update && apt-get install -y \
+    curl \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем зависимости из backend
+COPY backend/requirements.txt ./backend/requirements.txt
+
+RUN pip install --no-cache-dir -r backend/requirements.txt
+
+# Копируем остальной код backend
+COPY backend/ ./backend/
+COPY scripts /scripts
+RUN chmod +x /scripts/*.sh
+
+# Переходим в рабочую директорию приложения
+WORKDIR /app/backend
+
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
