@@ -1,6 +1,8 @@
 FROM python:3.11-slim
 
-# 1) Установим нужные системные пакеты
+# ─────────────────────────────────────────────────────────────────────────────
+# 1) Устанавливаем системные пакеты, необходимые для сборки зависимостей
+# ─────────────────────────────────────────────────────────────────────────────
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       build-essential \
@@ -10,46 +12,50 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Копируем файл с зависимостями для backend
-COPY backend/requirements.txt ./backend/requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+# 2) Копируем только «requirements.txt» для backend и bot, чтобы закешировать
+#    слой установки пакетов, прежде чем добавлять весь код
+# ─────────────────────────────────────────────────────────────────────────────
+COPY backend/requirements.txt  /app/backend/requirements.txt
+COPY bot/requirements.txt      /app/bot/requirements.txt
 
-# Устанавливаем зависимости из backend/requirements.txt
-RUN pip install --no-cache-dir -r backend/requirements.txt
-
-# Копируем файл с зависимостями для bot
-COPY bot/requirements.txt ./bot/requirements.txt
-
-# Устанавливаем зависимости из bot/requirements.txt
-RUN pip install --no-cache-dir -r bot/requirements.txt
-
-# 2) Копируем весь backend (включая test_settings.py внутри tattoo_intelligence/)
-COPY backend/ /app/backend/
-
-# 3) Копируем весь bot
-COPY bot/ /app/bot/
-
-# 4) Копируем конфигурацию pytest
-COPY pytest.ini /app/pytest.ini
-
-# (Optional) скопировать conftest.py, если он ещё нужен, но можно не копировать вовсе
-# COPY conftest.py /app/conftest.py
-
-# 5) Устанавливаем зависимости для backend + pytest
+# ─────────────────────────────────────────────────────────────────────────────
+# 3) Устанавливаем все зависимости одной командой:
+#    • зависимости backend (Django, DRF, Celery, httpx, Pillow и т.д.)
+#    • pytest и pytest-django для тестирования backend
+#    • зависимости bot (aiogram, httpx и т.д.)
+#    • pytest-asyncio для тестирования bot
+# ─────────────────────────────────────────────────────────────────────────────
 RUN pip install --no-cache-dir \
       -r /app/backend/requirements.txt \
-      pytest pytest-django httpx
-
-# 6) Устанавливаем зависимости для bot + pytest-asyncio
-RUN pip install --no-cache-dir \
+      pytest pytest-django httpx && \
+    pip install --no-cache-dir \
       -r /app/bot/requirements.txt \
-      pytest pytest-asyncio
+      pytest-asyncio
 
-# 7) Задаём окружение, чтобы Django знал, где искать настройки
+# ─────────────────────────────────────────────────────────────────────────────
+# 4) Копируем весь исходный код после установки зависимостей
+#    (изменения в коде не будут инвалидировать кеш слоя с pip install)
+# ─────────────────────────────────────────────────────────────────────────────
+COPY backend/ /app/backend/
+COPY bot/     /app/bot/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5) Копируем конфигурационные файлы pytest
+# ─────────────────────────────────────────────────────────────────────────────
+COPY pytest.ini   /app/pytest.ini
+COPY conftest.py  /app/conftest.py
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6) Настраиваем переменные окружения для тестов Django
+# ─────────────────────────────────────────────────────────────────────────────
 ENV DJANGO_SETTINGS_MODULE=tattoo_intelligence.test_settings
 ENV PYTHONPATH="/app/backend:/app/bot"
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# 8) По умолчанию запускаем pytest
+# ─────────────────────────────────────────────────────────────────────────────
+# 7) По умолчанию запускаем pytest
+# ─────────────────────────────────────────────────────────────────────────────
 CMD ["pytest", "-q", "--disable-warnings", "--maxfail=1"]

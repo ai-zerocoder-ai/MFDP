@@ -32,10 +32,10 @@ def generate_single_line_task(telegram_id: int, prompt_text: str) -> List[str]:
         args = {
             "prompt": f"{TRIG} {prompt_text}",
             "image_size": {"width": 512, "height": 512},
-            "num_inference_steps": 48,
-            "guidance_scale": 5.8,
+            "num_inference_steps": 45,
+            "guidance_scale": 4.8,
             "seed": random.randint(1, 1_000_000_000),
-            "loras": [{"path": LORA, "scale": 1.0}],
+            "loras": [{"path": LORA, "scale": 1.1}],
         }
 
         # Вызываем fal_client.run синхронно (воркер работает в отдельном процессе)
